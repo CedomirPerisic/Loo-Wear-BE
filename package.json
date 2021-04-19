@@ -4,17 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CedomirPerisic/Loo-Wear-BE.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dragomir Urdov",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/CedomirPerisic/Loo-Wear-BE/issues"
   },
-  "homepage": "https://github.com/CedomirPerisic/Loo-Wear-BE#readme"
+  "homepage": "https://github.com/CedomirPerisic/Loo-Wear-BE#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.7"
+  }
 }
