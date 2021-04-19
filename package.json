@@ -1,0 +1,20 @@
+{
+  "name": "loo-wear-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CedomirPerisic/Loo-Wear-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CedomirPerisic/Loo-Wear-BE/issues"
+  },
+  "homepage": "https://github.com/CedomirPerisic/Loo-Wear-BE#readme"
+}
