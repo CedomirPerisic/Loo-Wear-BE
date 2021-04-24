@@ -8,6 +8,8 @@ const i18next = require('i18next');
 const i18nextMiddleware = require('i18next-http-middleware');
 const FilesystemBackend = require('i18next-fs-backend');
 
+const productRoutes = require('./routes/product.route');
+
 // const multer = require('multer');
 // const upload = multer({
 //   dest: 'uploads/',
@@ -38,25 +40,32 @@ i18next
   .use(FilesystemBackend)
   .use(i18nextMiddleware.LanguageDetector)
   .init({
+    // debug: process.env.NODE_ENV === 'development',
+    // saveMissing: true,
     backend: {
       loadPath: __dirname + '/resources/locales/{{lng}}/{{ns}}.json',
       addPath: __dirname + '/resources/locales/{{lng}}/{{ns}}.missing.json'
     },
-    fallback: 'en',
+    supportedLngs: ['en', 'sr'],
+    fallbackLng: 'en',
     load: 'languageOnly',
-    saveMissing: false
+    ns: ['common', 'message'],
+    defaultNS: 'common'
   });
 
 app.use(i18nextMiddleware.handle(i18next));
 
 // Routes:
+
+app.use('/product', productRoutes);
+
 app.get('/', (req, res) => {
   const lang = req.language;
   console.log(lang);
   res.json({
-    message: 'success',
+    message: req.t('message:success'),
     data: {
-      test: req.t('translation:hello'),
+      test: req.t('hello'),
     },
   });
 });
