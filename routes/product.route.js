@@ -1,10 +1,17 @@
-const express = require('express');
-const productController = require('../controllers/product.controller');
+import { Router } from 'express';
+import { addProduct } from '../controllers/product.controller.js';
 
-const router = express.Router();
+const router = Router();
 
-router
-  .route('/')
-  .post(productController.addProduct)
+/**
+ * @swagger
+ * /product:
+ *  post:
+ *    summary: Create new product
+ *    description: Create new product for specific collection.
+ *    tags:
+ *      - product
+ */
+router.route('/').post(addProduct);
 
-module.exports = router;
+export default router;

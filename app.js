@@ -1,14 +1,19 @@
-const express = require('express');
+import express, { json } from 'express';
 
-const cors = require('cors');
-const morgan = require('morgan');
-const helmet = require('helmet');
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const i18next = require('i18next');
-const i18nextMiddleware = require('i18next-http-middleware');
-const FilesystemBackend = require('i18next-fs-backend');
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const productRoutes = require('./routes/product.route');
+import cors from 'cors';
+import morgan from 'morgan';
+import helmet from 'helmet';
+
+import i18next from 'i18next';
+import { LanguageDetector, handle } from 'i18next-http-middleware';
+import FilesystemBackend from 'i18next-fs-backend';
+
+import productRoutes from './routes/product.route.js';
 
 // const multer = require('multer');
 // const upload = multer({
@@ -33,12 +38,12 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Body parser:
-app.use(express.json({ limit: '10kb' }));
+app.use(json({ limit: '10kb' }));
 
 // i18n
 i18next
   .use(FilesystemBackend)
-  .use(i18nextMiddleware.LanguageDetector)
+  .use(LanguageDetector)
   .init({
     // debug: process.env.NODE_ENV === 'development',
     // saveMissing: true,
@@ -53,7 +58,7 @@ i18next
     defaultNS: 'common'
   });
 
-app.use(i18nextMiddleware.handle(i18next));
+app.use(handle(i18next));
 
 // Routes:
 
@@ -70,4 +75,4 @@ app.get('/', (req, res) => {
   });
 });
 
-module.exports = app;
+export default app;

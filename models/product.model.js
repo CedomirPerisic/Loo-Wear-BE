@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const slugify = require('slugify');
+import { Schema, model } from 'mongoose';
+import slugify from 'slugify';
 
-const productSchema = mongoose.Schema({
+const productSchema = Schema({
   name: {
     type: String,
     required: [true, 'A product must have a name!'],
@@ -55,6 +55,6 @@ productSchema.pre('save', function(next) {
   next();
 })
 
-const Product = mongoose.model('Product', productSchema);
+const Product = model('Product', productSchema);
 
-module.exports = Product;
+export default Product;
