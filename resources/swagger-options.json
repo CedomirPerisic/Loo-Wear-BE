@@ -1,0 +1,23 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Loo Wear API",
+    "version": "1.0.0",
+    "description": "The Loo Wear shop open API",
+    "license": {
+      "name": "ISC",
+      "url": "https://opensource.org/licenses/ISC"
+    },
+    "contact": {
+      "name": "Dragomir Urdov",
+      "email": "dragomir.urdov@gmail.com",
+      "url": "https://rs.linkedin.com/in/dragomir-urdov"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ]
+}

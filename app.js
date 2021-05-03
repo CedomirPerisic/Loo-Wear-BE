@@ -1,19 +1,18 @@
-import express, { json } from 'express';
+const express = require('express');
 
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+const cors = require('cors');
+const morgan = require('morgan');
+const helmet = require('helmet');
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const i18next = require('i18next');
+const { LanguageDetector, handle } = require('i18next-http-middleware');
+const FilesystemBackend = require('i18next-fs-backend');
 
-import cors from 'cors';
-import morgan from 'morgan';
-import helmet from 'helmet';
+const { AppError } = require('./utils/app-error');
+const { errorHandler } = require('./controllers/error.controller');
 
-import i18next from 'i18next';
-import { LanguageDetector, handle } from 'i18next-http-middleware';
-import FilesystemBackend from 'i18next-fs-backend';
-
-import productRoutes from './routes/product.route.js';
+const productRoutes = require('./routes/product.route');
+const collectionRoutes = require('./routes/collection.route');
 
 // const multer = require('multer');
 // const upload = multer({
@@ -38,7 +37,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Body parser:
-app.use(json({ limit: '10kb' }));
+app.use(express.json({ limit: '10kb' }));
 
 // i18n
 i18next
@@ -49,30 +48,23 @@ i18next
     // saveMissing: true,
     backend: {
       loadPath: __dirname + '/resources/locales/{{lng}}/{{ns}}.json',
-      addPath: __dirname + '/resources/locales/{{lng}}/{{ns}}.missing.json'
+      addPath: __dirname + '/resources/locales/{{lng}}/{{ns}}.missing.json',
     },
     supportedLngs: ['en', 'sr'],
     fallbackLng: 'en',
     load: 'languageOnly',
     ns: ['common', 'message'],
-    defaultNS: 'common'
+    defaultNS: 'common',
   });
 
 app.use(handle(i18next));
 
 // Routes:
-
+app.use('/collection', collectionRoutes);
 app.use('/product', productRoutes);
-
-app.get('/', (req, res) => {
-  const lang = req.language;
-  console.log(lang);
-  res.json({
-    message: req.t('message:success'),
-    data: {
-      test: req.t('hello'),
-    },
-  });
+app.get('/', (req, res, next) => {
+  next(new AppError('test error', 500));
 });
+app.use(errorHandler);
 
-export default app;
+module.exports = app;
