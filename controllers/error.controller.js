@@ -1,18 +1,16 @@
 // eslint-disable-next-line no-unused-vars
 const mongoose = require('mongoose');
+
 const AppError = require('../utils/app-error');
 
 exports.errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  // console.log(error);
   if (process.env.NODE_ENV === 'development') {
     sendDevError(err, res);
   } else {
     let error = { ...err };
-
-    console.log(error);
 
     // Handle different error type:
     if (error.name === 'CastError') error = handleCastErrorDB(error);

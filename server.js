@@ -29,12 +29,11 @@ mongoose
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('DB connected successfully!');
-    }
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`Sever launched ad http://localhost:${port}`);
+    });
   });
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {});

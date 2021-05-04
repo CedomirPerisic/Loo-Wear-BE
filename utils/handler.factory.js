@@ -1,11 +1,17 @@
-const { catchAsync } = require('../utils/catch-async');
-const AppError = require('../utils/app-error');
 const QueryFeatures = require('./query-features');
-const { query } = require('express');
+
+const catchAsync = require('../utils/catch-async');
+const AppError = require('../utils/app-error');
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.create(req.body);
+    const data = { ...req.body };
+
+    if (req.file) {
+      data.photo = req.file.filename;
+    }
+
+    const doc = await Model.create(data);
 
     res.status(201).json({
       message: 'success',
@@ -13,7 +19,7 @@ exports.createOne = (Model) =>
     });
   });
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, ...populate) =>
   catchAsync(async (req, res, next) => {
     let filter = {};
     if (req.params.collectionId) {
@@ -26,19 +32,34 @@ exports.getAll = (Model) =>
       .limitFields()
       .paginate();
 
-    const doc = await filters.query;
+    const query = filters.query;
+
+    if (populate) {
+      populate.forEach((item) => query.populate(item));
+    }
+
+    const doc = await filters.query.orFail(
+      new AppError('There is no data to show', 404)
+    );
 
     res.status(200).json({
       message: 'success',
       data: doc,
+      size: doc.size,
     });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, ...populate) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
 
-    const doc = await query;
+    if (populate) {
+      populate.forEach((item) => query.populate(item));
+    }
+
+    const doc = await query.orFail(
+      new AppError('There is no data to show', 404)
+    );
 
     if (!doc) {
       return next(new AppError('No document found with that ID', 404));
@@ -52,7 +73,13 @@ exports.getOne = (Model) =>
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+    const data = { ...req.body };
+
+    if (req.file) {
+      data.photo = req.file.filename;
+    }
+
+    const doc = await Model.findByIdAndUpdate(req.params.id, data, {
       new: true,
       runValidators: true,
     });

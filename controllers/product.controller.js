@@ -1,7 +1,10 @@
-exports.addProduct = (req, res) => {
-  const data = req.body;
-  res.status(200).json({
-    message: 'success',
-    data,
-  });
-};
+const Product = require('../models/product.model');
+const {
+  createOne,
+  getAll,
+  getOne,
+  updateOne,
+  deleteOne,
+} = require('../utils/handler.factory');
+
+exports.addProduct = createOne(Product);

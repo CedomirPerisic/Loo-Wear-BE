@@ -3,27 +3,27 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 
 const i18next = require('i18next');
 const { LanguageDetector, handle } = require('i18next-http-middleware');
 const FilesystemBackend = require('i18next-fs-backend');
 
-const { AppError } = require('./utils/app-error');
 const { errorHandler } = require('./controllers/error.controller');
 
 const productRoutes = require('./routes/product.route');
 const collectionRoutes = require('./routes/collection.route');
+const configRoutes = require('./routes/config.route');
 
-// const multer = require('multer');
-// const upload = multer({
-//   dest: 'uploads/',
-// });
+const AppError = require('./utils/app-error');
+
+const AppGlobals = require('./resources/app.globals');
 
 const app = express();
 
 // CORS:
 const corsOptions = {
-  origin: 'http://localhost:4200',
+  origin: process.env.CORS_ORIGIN,
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
@@ -37,7 +37,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Body parser:
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: AppGlobals.reqBodyLimit }));
+
+app.use(mongoSanitize());
 
 // i18n
 i18next
@@ -50,21 +52,27 @@ i18next
       loadPath: __dirname + '/resources/locales/{{lng}}/{{ns}}.json',
       addPath: __dirname + '/resources/locales/{{lng}}/{{ns}}.missing.json',
     },
-    supportedLngs: ['en', 'sr'],
-    fallbackLng: 'en',
+    supportedLngs: AppGlobals.supportedLngs,
+    fallbackLng: AppGlobals.defaultLang,
     load: 'languageOnly',
-    ns: ['common', 'message'],
-    defaultNS: 'common',
+    ns: AppGlobals.namespaces,
+    defaultNS: AppGlobals.defaultNamespace,
   });
 
 app.use(handle(i18next));
 
+app.use(express.static(`${__dirname}/uploads`));
+
 // Routes:
 app.use('/collection', collectionRoutes);
 app.use('/product', productRoutes);
-app.get('/', (req, res, next) => {
-  next(new AppError('test error', 500));
+app.use('/config', configRoutes);
+
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
+
+// Error handling:
 app.use(errorHandler);
 
 module.exports = app;
