@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-const Collection = require('./collection.model');
-
 const productSchema = mongoose.Schema(
   {
     name: {
@@ -15,9 +13,10 @@ const productSchema = mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Collection',
       required: [true, 'Product must belong to a collection'],
+      immutable: true,
       validate: {
         validator: async function (value) {
-          const doc = await Collection.findById(value);
+          const doc = await mongoose.model('Collection').findById(value);
           if (!doc) {
             return Promise.resolve(false);
           }
@@ -76,11 +75,20 @@ const productSchema = mongoose.Schema(
   {
     timestamp: true,
     strict: true,
+    versionKey: false,
+    toJSON: { virtuals: true },
   }
 );
 
 productSchema.index({ slug: 1 });
 productSchema.index({ collection: 1 });
+
+productSchema.virtual('stock').get(function () {
+  if (this.sizes.length === 0) return 0;
+  return this.sizes.reduce(
+    (accumulator, currentValue) => (accumulator.stock += currentValue.stock)
+  );
+});
 
 productSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
@@ -88,14 +96,14 @@ productSchema.pre('save', function (next) {
 });
 
 productSchema.post('save', async function (doc, next) {
-  await Collection.findByIdAndUpdate(this.collectionId, {
+  await mongoose.model('Collection').findByIdAndUpdate(this.collectionId, {
     $push: { products: doc._id },
   });
   next();
 });
 
 productSchema.post('remove', async function (doc, next) {
-  await Collection.findByIdAndUpdate(this.collectionId, {
+  await mongoose.model('Collection').findByIdAndUpdate(this.collectionId, {
     $pull: { products: doc._id },
   });
   next();

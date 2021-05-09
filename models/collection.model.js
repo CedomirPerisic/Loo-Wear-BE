@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-const Product = require('./product.model');
-
 const { removeOldFile } = require('../utils/common.util');
 
 const collectionSchema = new mongoose.Schema(
@@ -13,7 +11,7 @@ const collectionSchema = new mongoose.Schema(
       unique: [true, 'Collection already exists!'],
       trim: true,
       // TODO: Find solution to update slug after update name
-      immutable: [true, 'Can not change collection name'],
+      immutable: true,
     },
     description: {
       type: String,
@@ -31,6 +29,7 @@ const collectionSchema = new mongoose.Schema(
   {
     timestamps: true,
     strict: true,
+    versionKey: false,
   }
 );
 
