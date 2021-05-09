@@ -8,9 +8,9 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "start": "set NODE_ENV=development && nodemon server.js",
+    "start": "cross-env NODE_ENV=development nodemon server.js",
     "debug": "ndb server.js",
-    "start:prod": "set NODE_ENV=production && nodemon server.js"
+    "start:prod": "cross-env NODE_ENV=production nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^7.24.0",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",

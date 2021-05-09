@@ -84,7 +84,12 @@ productSchema.index({ slug: 1 });
 productSchema.index({ collection: 1 });
 
 productSchema.virtual('stock').get(function () {
-  if (this.sizes.length === 0) return 0;
+  if (!this.sizes) {
+    return undefined;
+  } else if (this.sizes.length === 0) {
+    return 0;
+  }
+
   return this.sizes.reduce(
     (accumulator, currentValue) => (accumulator.stock += currentValue.stock)
   );
