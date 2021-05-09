@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
+const Product = require('./product.model');
+
 const { removeOldFile } = require('../utils/common.util');
 
 const collectionSchema = new mongoose.Schema(
@@ -28,6 +30,7 @@ const collectionSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    strict: true,
   }
 );
 
@@ -53,6 +56,11 @@ collectionSchema.post(/^findOneAnd/, async function (newDoc, next) {
     removeOldFile(photoPath);
   }
 
+  next();
+});
+
+collectionSchema.post('remove', async function (doc, next) {
+  await mongoose.model('Product').deleteMany({ collectionId: doc._id });
   next();
 });
 

@@ -37,6 +37,7 @@ const productSchema = mongoose.Schema(
             type: String,
             enum: ['XS', 'S', 'M', 'L', 'XL', 'UNI'],
           },
+          description: String,
           stock: {
             type: Number,
             default: 0,
@@ -72,7 +73,10 @@ const productSchema = mongoose.Schema(
       },
     ],
   },
-  { timestamp: true }
+  {
+    timestamp: true,
+    strict: true,
+  }
 );
 
 productSchema.index({ slug: 1 });
@@ -86,6 +90,13 @@ productSchema.pre('save', function (next) {
 productSchema.post('save', async function (doc, next) {
   await Collection.findByIdAndUpdate(this.collectionId, {
     $push: { products: doc._id },
+  });
+  next();
+});
+
+productSchema.post('remove', async function (doc, next) {
+  await Collection.findByIdAndUpdate(this.collectionId, {
+    $pull: { products: doc._id },
   });
   next();
 });

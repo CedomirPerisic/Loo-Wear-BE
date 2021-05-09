@@ -1,5 +1,11 @@
 const { Router } = require('express');
-const { addProduct } = require('../controllers/product.controller');
+const {
+  addProduct,
+  getProducts,
+  getProduct,
+  updateProduct,
+  removeProduct,
+} = require('../controllers/product.controller');
 
 const router = Router();
 
@@ -12,6 +18,7 @@ const router = Router();
  *    tags:
  *      - product
  */
-router.route('/').post(addProduct);
+router.route('/').get(getProducts).post(addProduct);
+router.route('/:id').get(getProduct).patch(updateProduct).delete(removeProduct);
 
 module.exports = router;

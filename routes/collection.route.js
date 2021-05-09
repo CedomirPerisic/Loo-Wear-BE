@@ -19,7 +19,7 @@ router
 router
   .route('/:id')
   .get(getCollection)
-  .post(uploadPhoto, resizePhoto, updateCollection)
+  .patch(uploadPhoto, resizePhoto, updateCollection)
   .delete(deleteCollection);
 
 module.exports = router;
